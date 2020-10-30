@@ -4,6 +4,7 @@ import (
 	"Website/db"
 	"Website/jwt"
 	"Website/settings"
+	"Website/ws"
 	"encoding/json"
 	"io/ioutil"
 	"net"
@@ -100,11 +101,12 @@ func TestWebsocketChat(t *testing.T) {
 	}, settings.ReadBufferSize, settings.WriteBufferSize)
 	assert.Nil(t, err)
 
+	var message ws.Message
 	wsConn.WriteMessage(1, testMessage)
-	_, message, err := wsConn.ReadMessage()
-	assert.Nil(t, err)
-	assert.Contains(t, string(message), string(testMessage))
-	assert.Contains(t, string(message), testUsername)
+
+	assert.Nil(t, wsConn.ReadJSON(&message))
+	assert.Equal(t, string(testMessage), message.Message)
+	assert.Equal(t, testUsername, message.AuthorUsername)
 }
 
 func sendLoginRequest(router *gin.Engine, email, password string) *httptest.ResponseRecorder {

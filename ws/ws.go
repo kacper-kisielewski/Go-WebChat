@@ -3,7 +3,6 @@ package ws
 import (
 	"Website/jwt"
 	"Website/settings"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -17,6 +16,12 @@ var (
 	}
 	clients []*websocket.Conn
 )
+
+//Message struct
+type Message struct {
+	Message        string
+	AuthorUsername string
+}
 
 //ChatHandler handles server chat
 func ChatHandler(w http.ResponseWriter, req *http.Request) {
@@ -33,17 +38,20 @@ func ChatHandler(w http.ResponseWriter, req *http.Request) {
 	defer removeClient(conn)
 
 	for {
-		messageType, message, err := conn.ReadMessage()
+		_, message, err := conn.ReadMessage()
 		if err != nil {
 			return
 		}
-		conn.WriteMessage(messageType, []byte(fmt.Sprintf("[%s] %s", user.Username, message)))
+		brodcast(string(message), user.Username)
 	}
 }
 
-func brodcast(messageType int, message []byte) {
+func brodcast(message, authorUsername string) {
 	for _, client := range clients {
-		if client.WriteMessage(messageType, message) != nil {
+		if client.WriteJSON(Message{
+			Message:        message,
+			AuthorUsername: authorUsername,
+		}) != nil {
 			removeClient(client)
 		}
 	}
