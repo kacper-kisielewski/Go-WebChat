@@ -16,6 +16,11 @@ func Index(c *gin.Context) {
 	renderTemplate(c, "index", nil)
 }
 
+//LoginGET view
+func LoginGET(c *gin.Context) {
+	renderTemplate(c, "login", nil)
+}
+
 //Login view
 func Login(c *gin.Context) {
 	var loginBody LoginBody
@@ -38,6 +43,11 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": token,
 	})
+}
+
+//RegisterGET view
+func RegisterGET(c *gin.Context) {
+	renderTemplate(c, "register", nil)
 }
 
 //Register view
