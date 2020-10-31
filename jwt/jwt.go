@@ -20,7 +20,7 @@ func CreateToken(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
 		email,
 		jwt.StandardClaims{
-			ExpiresAt: 72000,
+			ExpiresAt: settings.JwtTokenExpiresAt,
 			IssuedAt:  getCurrentUnixTime(),
 		},
 	})

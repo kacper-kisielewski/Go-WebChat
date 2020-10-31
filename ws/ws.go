@@ -23,6 +23,8 @@ type Message struct {
 	AuthorUsername string
 }
 
+// TODO Spam prevention
+
 //ChatHandler handles server chat
 func ChatHandler(w http.ResponseWriter, req *http.Request) {
 	user, err := jwt.GetUserFromToken(req.Header.Get("Sec-Websocket-Protocol"))

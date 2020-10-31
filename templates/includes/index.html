@@ -1,3 +1,60 @@
 {{ define "content" }}
-<h1>Welcome to {{ .siteName }}</h1>
+{{ if .isAuthenticated }}
+    <h1>Chat</h1>
+    <hr>
+
+    <div>
+        <input type="text" id="messageInp" class="w-25"> <br>
+        <p id="chat"/>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            var cookieArr = document.cookie.split(";");
+            
+            for(var i = 0; i < cookieArr.length; i++) {
+                var cookiePair = cookieArr[i].split("=");
+                if(name == cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+
+            return null;
+        }
+
+        const token = getCookie("{{ .tokenCookieName }}")
+        let ws = new WebSocket("ws://localhost:8000/chat", token);
+
+        const messageInp = document.getElementById("messageInp");
+        var chat = document.getElementById("chat")
+        
+        function sendMessage() {
+            ws.send(messageInp.value);
+            messageInp.value = null;
+        }
+        
+        messageInp.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13)
+                sendMessage();
+        });
+
+        function printMessage(message, author) {
+            chat.innerText += `[${author}] ${message}\n`;
+        }
+
+        function receiveMessage(message) {
+            decodedMessage = JSON.parse(message.data);
+
+            printMessage(decodedMessage.Message, decodedMessage.AuthorUsername);
+        }
+
+        ws.onopen = function() { printMessage("Successfully connected to the chat", "@SERVER") }
+        ws.onerror = function() { printMessage("An error occurred", "@SERVER") }
+        ws.onclose = function() { printMessage("Connection closed", "@SERVER") }
+
+        ws.onmessage = receiveMessage;
+    </script>
+{{ else }}
+    <h1>Welcome to {{ .siteName }}</h1>
+{{ end }}
 {{ end }}

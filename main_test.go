@@ -5,7 +5,6 @@ import (
 	"Website/jwt"
 	"Website/settings"
 	"Website/ws"
-	"encoding/json"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -81,18 +80,13 @@ func TestLogin(t *testing.T) {
 		router = setupRouter()
 
 		resp     *httptest.ResponseRecorder
-		respJSON map[string]string
 		respBody []byte
-		ok       bool
 	)
 
 	resp = sendLoginRequest(router, testEmail, testPassword)
-	respBody, _ = ioutil.ReadAll(resp.Body)
 
-	json.Unmarshal(respBody, &respJSON)
-	accessToken, ok = respJSON["access_token"]
-	assert.True(t, ok)
-	assert.Equal(t, http.StatusOK, resp.Code)
+	accessToken = strings.Split(resp.HeaderMap.Get("Set-Cookie"), "=")[1]
+	assert.Equal(t, http.StatusTemporaryRedirect, resp.Code)
 
 	resp = sendLoginRequest(router, testEmail, testPassword+"a")
 	respBody, _ = ioutil.ReadAll(resp.Body)

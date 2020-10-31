@@ -7,6 +7,8 @@ type RegisterBody struct {
 	Password string `form:"password" binding:"required"`
 }
 
+// TODO Add password validation
+
 //LoginBody struct
 type LoginBody struct {
 	Email    string `form:"email" binding:"required,email"`

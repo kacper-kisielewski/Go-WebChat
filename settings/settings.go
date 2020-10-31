@@ -10,11 +10,13 @@ const (
 	SiteName     = "WebChat"
 	TemplatesDir = "templates"
 
+	JwtTokenExpiresAt = 72000
+	TokenCookieName   = "token"
+	Domain            = "localhost"
+
 	MaximumUsernameLength         = 30
 	MinimumUsernameLength         = 2
 	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"
-
-	RegisterSuccessfullMessage = "User registered"
 
 	LoginInvalidCredientialsMessage = "Invalid credientials"
 

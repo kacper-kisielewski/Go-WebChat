@@ -13,8 +13,12 @@ import (
 
 //Index view
 func Index(c *gin.Context) {
-	renderTemplate(c, "index", nil)
+	renderTemplate(c, "index", map[string]interface{}{
+		"tokenCookieName": settings.TokenCookieName,
+	})
 }
+
+// TODO Add logout
 
 //LoginGET view
 func LoginGET(c *gin.Context) {
@@ -40,9 +44,16 @@ func Login(c *gin.Context) {
 		log.Panic(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"access_token": token,
-	})
+	c.SetCookie(
+		settings.TokenCookieName,
+		token,
+		settings.JwtTokenExpiresAt,
+		"/",
+		settings.Domain,
+		true,
+		false,
+	)
+	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
 //RegisterGET view
@@ -68,25 +79,5 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.String(http.StatusOK, settings.RegisterSuccessfullMessage)
-}
-
-func renderTemplate(c *gin.Context, name string, obj map[string]interface{}, title ...string) {
-	var data gin.H
-
-	if len(title) > 0 {
-		data = gin.H{
-			"title": title[0] + " | " + settings.SiteName,
-		}
-	} else {
-		data = gin.H{
-			"title": settings.SiteName,
-		}
-	}
-	data["siteName"] = settings.SiteName
-
-	for key, value := range obj {
-		data[key] = value
-	}
-	c.HTML(http.StatusOK, name+".html", data)
+	c.Redirect(http.StatusTemporaryRedirect, "/")
 }
