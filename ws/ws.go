@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/kyokomi/emoji"
 )
 
 var (
@@ -30,7 +31,7 @@ type Client struct {
 //SendTo sends a message to a client
 func (c *Client) SendTo(message, authorUsername string) error {
 	return c.Conn.WriteJSON(Message{
-		Message:        message,
+		Message:        emoji.Sprint(message),
 		AuthorUsername: authorUsername,
 	})
 }
