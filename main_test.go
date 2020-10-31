@@ -14,29 +14,21 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bxcodec/faker/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/assert"
 )
 
-//Declare constants
-const (
-	testUsername = "User"
-	testEmail    = "user@example.com"
-	testPassword = "Password1234"
-)
-
 var (
+	testUsername = faker.Username()
+	testEmail    = faker.Email()
+	testPassword = faker.Password()
+
 	testMessage = []byte("This is a test messsage")
 
 	accessToken string
 )
-
-//LoginBody struct
-type LoginBody struct {
-	email    string
-	password string
-}
 
 func TestIndex(t *testing.T) {
 	assert.Equal(t, http.StatusOK, performRequest(
@@ -44,14 +36,30 @@ func TestIndex(t *testing.T) {
 	).Code)
 }
 
-func TestAuthentication(t *testing.T) {
+func TestRegister(t *testing.T) {
+	router := setupRouter()
+
 	for i := 0; i < 2; i++ {
-		db.RegisterUser(testUsername, testEmail, testPassword)
+		sendRegisterRequest(router, testUsername, testEmail, testPassword)
 	}
 
-	db.RegisterUser(strings.ToUpper(testUsername), testEmail, testPassword)
-	db.RegisterUser(testUsername, strings.ToUpper(testEmail), testPassword)
-	db.RegisterUser(strings.ToUpper(testUsername), strings.ToUpper(testEmail), testPassword)
+	sendRegisterRequest(router, strings.ToUpper(testUsername), testEmail, testPassword)
+	sendRegisterRequest(router, testUsername, strings.ToUpper(testEmail), testPassword)
+	sendRegisterRequest(router, strings.ToUpper(testUsername), strings.ToUpper(testEmail), testPassword)
+
+	sendRegisterRequest(router, testUsername+"-", faker.Email(), faker.Password())
+
+	for i := 1; i < 4; i++ {
+		assert.NotEqual(t, http.StatusOK, sendRegisterRequest(
+			router, strings.Repeat("a", settings.MaximumUsernameLength+i), faker.Email(), faker.Password(),
+		))
+	}
+
+	for i := 0; i < settings.MinimumUsernameLength; i++ {
+		assert.NotEqual(t, http.StatusOK, sendRegisterRequest(
+			router, strings.Repeat("a", i), faker.Email(), faker.Password(),
+		))
+	}
 
 	var (
 		user      db.User
@@ -61,9 +69,17 @@ func TestAuthentication(t *testing.T) {
 	db.DB.Model(&user).Where("email ILIKE ? OR username ILIKE ?", testEmail, testUsername).Count(&userCount)
 	assert.Equal(t, 1, int(userCount))
 
-	router := setupRouter()
+	db.DB.Model(&user).Where("LENGTH(username) > ?", settings.MaximumUsernameLength).Count(&userCount)
+	assert.Equal(t, 0, int(userCount))
 
+	db.DB.Model(&user).Where("LENGTH(username < ?", settings.MinimumUsernameLength).Count(&userCount)
+	assert.Equal(t, 0, int(userCount))
+}
+
+func TestLogin(t *testing.T) {
 	var (
+		router = setupRouter()
+
 		resp     *httptest.ResponseRecorder
 		respJSON map[string]string
 		respBody []byte
@@ -73,21 +89,22 @@ func TestAuthentication(t *testing.T) {
 	resp = sendLoginRequest(router, testEmail, testPassword)
 	respBody, _ = ioutil.ReadAll(resp.Body)
 
-	assert.Equal(t, http.StatusOK, resp.Code)
-
 	json.Unmarshal(respBody, &respJSON)
 	accessToken, ok = respJSON["access_token"]
 	assert.True(t, ok)
-
-	user, err := jwt.GetUserFromToken(accessToken)
-	assert.Nil(t, err)
-	assert.Equal(t, testEmail, user.Email)
-	assert.Equal(t, testUsername, user.Username)
+	assert.Equal(t, http.StatusOK, resp.Code)
 
 	resp = sendLoginRequest(router, testEmail, testPassword+"a")
 	respBody, _ = ioutil.ReadAll(resp.Body)
 	assert.Equal(t, http.StatusForbidden, resp.Code)
 	assert.Equal(t, settings.LoginInvalidCredientialsMessage, string(respBody))
+}
+
+func TestAccessToken(t *testing.T) {
+	user, err := jwt.GetUserFromToken(accessToken)
+	assert.Nil(t, err)
+	assert.Equal(t, strings.ToLower(testEmail), user.Email)
+	assert.Equal(t, testUsername, user.Username)
 }
 
 func TestWebsocketChat(t *testing.T) {
@@ -107,6 +124,16 @@ func TestWebsocketChat(t *testing.T) {
 	assert.Nil(t, wsConn.ReadJSON(&message))
 	assert.Equal(t, string(testMessage), message.Message)
 	assert.Equal(t, testUsername, message.AuthorUsername)
+}
+
+func sendRegisterRequest(router *gin.Engine, username, email, password string) *httptest.ResponseRecorder {
+	return performRequest(
+		router, "POST", "/auth/register", url.Values{
+			"username": {username},
+			"email":    {email},
+			"password": {password},
+		},
+	)
 }
 
 func sendLoginRequest(router *gin.Engine, email, password string) *httptest.ResponseRecorder {

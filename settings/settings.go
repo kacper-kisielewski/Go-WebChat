@@ -7,8 +7,9 @@ const (
 	Addr = ":8000"
 	Salt = 18
 
-	MaximumPasswordLength = 30
-	MinimumPasswordLength = 2
+	MaximumUsernameLength         = 30
+	MinimumUsernameLength         = 2
+	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"
 
 	RegisterSuccessfullMessage = "User registered"
 

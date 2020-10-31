@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 //Index view
@@ -17,16 +18,19 @@ func Index(c *gin.Context) {
 
 //Login view
 func Login(c *gin.Context) {
-	var (
-		email    = c.PostForm("email")
-		password = []byte(c.PostForm("password"))
-	)
-	if !db.AuthenticateUser(email, password) {
+	var loginBody LoginBody
+
+	if err := c.ShouldBindWith(&loginBody, binding.Form); err != nil {
+		c.String(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	if !db.AuthenticateUser(loginBody.Email, []byte(loginBody.Password)) {
 		c.String(http.StatusForbidden, settings.LoginInvalidCredientialsMessage)
 		return
 	}
 
-	token, err := jwt.CreateToken(email)
+	token, err := jwt.CreateToken(loginBody.Email)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -38,14 +42,20 @@ func Login(c *gin.Context) {
 
 //Register view
 func Register(c *gin.Context) {
-	var (
-		username = c.PostForm("username")
-		email    = c.PostForm("email")
-		password = c.PostForm("password")
-	)
+	var registerBody RegisterBody
 
-	if err := db.RegisterUser(username, email, password); err != nil {
-		log.Panic(err)
+	if err := c.ShouldBindWith(&registerBody, binding.Form); err != nil {
+		c.String(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	if err := db.RegisterUser(
+		registerBody.Username,
+		registerBody.Email,
+		[]byte(registerBody.Password),
+	); err != nil {
+		c.String(http.StatusUnprocessableEntity, err.Error())
+		return
 	}
 
 	c.String(http.StatusOK, settings.RegisterSuccessfullMessage)
