@@ -14,7 +14,8 @@ import (
 //Index view
 func Index(c *gin.Context) {
 	renderTemplate(c, "index", map[string]interface{}{
-		"tokenCookieName": settings.TokenCookieName,
+		"tokenCookieName":    settings.TokenCookieName,
+		"chatSystemUsername": settings.ChatSystemUsername,
 	})
 }
 

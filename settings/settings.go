@@ -1,6 +1,9 @@
 package settings
 
-import "os"
+import (
+	"os"
+	"time"
+)
 
 //Define global constants (settings)
 const (
@@ -18,10 +21,14 @@ const (
 	MinimumUsernameLength         = 2
 	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"
 
+	MaximumChatMessageLength = 100
+	ChatMessageCooldown      = time.Second * 3
+	ChatSystemUsername       = "@SYSTEM"
+
 	LoginInvalidCredientialsMessage = "Invalid credientials"
 
-	ReadBufferSize  = 1024
-	WriteBufferSize = 1024
+	ReadBufferSize  = 128
+	WriteBufferSize = 128
 )
 
 //Define global variables

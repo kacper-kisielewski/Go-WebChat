@@ -3,8 +3,11 @@ package ws
 import (
 	"Website/jwt"
 	"Website/settings"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -14,16 +17,38 @@ var (
 		ReadBufferSize:  settings.ReadBufferSize,
 		WriteBufferSize: settings.WriteBufferSize,
 	}
-	clients []*websocket.Conn
+	clients []Client
 )
+
+//Client struct
+type Client struct {
+	Username      string
+	Conn          *websocket.Conn
+	LastMessageAt time.Time
+}
+
+//SendTo sends a message to a client
+func (c *Client) SendTo(message, authorUsername string) error {
+	return c.Conn.WriteJSON(Message{
+		Message:        message,
+		AuthorUsername: authorUsername,
+	})
+}
+
+func newClient(w http.ResponseWriter, req *http.Request, username string) (Client, error) {
+	conn, err := upgrader.Upgrade(w, req, nil)
+	if err != nil {
+		return Client{}, err
+	}
+
+	return Client{username, conn, time.Unix(0, 0)}, nil
+}
 
 //Message struct
 type Message struct {
 	Message        string
 	AuthorUsername string
 }
-
-// TODO Spam prevention
 
 //ChatHandler handles server chat
 func ChatHandler(w http.ResponseWriter, req *http.Request) {
@@ -32,48 +57,69 @@ func ChatHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	conn, err := upgrader.Upgrade(w, req, nil)
+	client, err := newClient(w, req, user.Username)
 	if err != nil {
 		return
 	}
-	addClient(conn)
-	defer removeClient(conn)
+
+	addClient(client)
+	defer removeClient(client)
 
 	for {
-		_, message, err := conn.ReadMessage()
+		_, message, err := client.Conn.ReadMessage()
+		if time.Now().Sub(client.LastMessageAt) <= settings.ChatMessageCooldown {
+			client.SendTo(
+				fmt.Sprintf("Please wait %s before sending a message", settings.ChatMessageCooldown.String()),
+				settings.ChatSystemUsername)
+			continue
+		}
+		client.LastMessageAt = time.Now()
 		if err != nil {
 			return
 		}
-		brodcast(string(message), user.Username)
+		if !checkMessage(string(message)) {
+			continue
+		}
+
+		brodcast(string(message), client.Username)
 	}
+}
+
+func checkMessage(message string) bool {
+	if len(message) > settings.MaximumUsernameLength {
+		return false
+	}
+
+	if len(strings.TrimSpace(message)) == 0 {
+		return false
+	}
+
+	return true
 }
 
 func brodcast(message, authorUsername string) {
 	for _, client := range clients {
-		if client.WriteJSON(Message{
-			Message:        message,
-			AuthorUsername: authorUsername,
-		}) != nil {
+		if client.SendTo(message, authorUsername) != nil {
 			removeClient(client)
 		}
 	}
 }
 
-func addClient(client *websocket.Conn) {
+func addClient(client Client) {
 	clients = append(clients, client)
 	log.Printf(
 		"New connection: %s --> %s",
-		client.RemoteAddr().String(),
-		client.LocalAddr().String(),
+		client.Conn.RemoteAddr().String(),
+		client.Conn.LocalAddr().String(),
 	)
 }
 
-func removeClient(client *websocket.Conn) {
+func removeClient(client Client) {
 	for i, _client := range clients {
 		if _client == client {
 			clients = append(clients[:i], clients[i+1:]...)
-			log.Printf("Connection to %s closed", client.RemoteAddr().String())
-			client.Close()
+			log.Printf("Connection to %s closed", client.Conn.RemoteAddr().String())
+			client.Conn.Close()
 			return
 		}
 	}

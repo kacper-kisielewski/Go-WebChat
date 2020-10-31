@@ -48,9 +48,13 @@
             printMessage(decodedMessage.Message, decodedMessage.AuthorUsername);
         }
 
-        ws.onopen = function() { printMessage("Successfully connected to the chat", "@SERVER") }
-        ws.onerror = function() { printMessage("An error occurred", "@SERVER") }
-        ws.onclose = function() { printMessage("Connection closed", "@SERVER") }
+        function sendAsSystem(message) {
+            printMessage(message, "{{ .chatSystemUsername }}")
+        }
+
+        ws.onopen = function() { sendAsSystem("Successfully connected to the chat") }
+        ws.onerror = function() { sendAsSystem("An error occurred") }
+        ws.onclose = function() { sendAsSystem("Connection closed") }
 
         ws.onmessage = receiveMessage;
     </script>
