@@ -13,7 +13,7 @@ import (
 
 //Index view
 func Index(c *gin.Context) {
-	c.String(http.StatusOK, "Index")
+	renderTemplate(c, "index", nil)
 }
 
 //Login view
@@ -59,4 +59,24 @@ func Register(c *gin.Context) {
 	}
 
 	c.String(http.StatusOK, settings.RegisterSuccessfullMessage)
+}
+
+func renderTemplate(c *gin.Context, name string, obj map[string]interface{}, title ...string) {
+	var data gin.H
+
+	if len(title) > 0 {
+		data = gin.H{
+			"title": title[0] + " | " + settings.SiteName,
+		}
+	} else {
+		data = gin.H{
+			"title": settings.SiteName,
+		}
+	}
+	data["siteName"] = settings.SiteName
+
+	for key, value := range obj {
+		data[key] = value
+	}
+	c.HTML(http.StatusOK, name+".html", data)
 }

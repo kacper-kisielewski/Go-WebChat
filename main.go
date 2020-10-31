@@ -5,7 +5,9 @@ import (
 	"Website/views"
 	"Website/ws"
 	"log"
+	"path/filepath"
 
+	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +18,8 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
+	router.HTMLRender = setupRenderer()
+
 	router.GET("/", views.Index)
 
 	authGroup := router.Group("/auth")
@@ -29,4 +33,30 @@ func setupRouter() *gin.Engine {
 	})
 
 	return router
+}
+
+func setupRenderer() multitemplate.Renderer {
+	renderer := multitemplate.NewRenderer()
+
+	layouts, err := templatesGlob("layouts")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	includes, err := templatesGlob("includes")
+
+	for _, include := range includes {
+		files := append(layouts, include)
+		renderer.AddFromFiles(filepath.Base(include), files...)
+	}
+
+	return renderer
+}
+
+func templatesGlob(folder string) ([]string, error) {
+	return filepath.Glob(
+		filepath.Join(
+			settings.TemplatesDir, folder, "*.html",
+		),
+	)
 }

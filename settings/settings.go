@@ -7,6 +7,9 @@ const (
 	Addr = ":8000"
 	Salt = 18
 
+	SiteName     = "WebChat"
+	TemplatesDir = "templates"
+
 	MaximumUsernameLength         = 30
 	MinimumUsernameLength         = 2
 	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"
