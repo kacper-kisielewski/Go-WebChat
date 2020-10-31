@@ -86,7 +86,7 @@ func TestLogin(t *testing.T) {
 	resp = sendLoginRequest(router, testEmail, testPassword)
 
 	accessToken = strings.Split(resp.HeaderMap.Get("Set-Cookie"), "=")[1]
-	assert.Equal(t, http.StatusTemporaryRedirect, resp.Code)
+	assert.Equal(t, http.StatusFound, resp.Code)
 
 	resp = sendLoginRequest(router, testEmail, testPassword+"a")
 	respBody, _ = ioutil.ReadAll(resp.Body)

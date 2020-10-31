@@ -29,6 +29,8 @@ func setupRouter() *gin.Engine {
 
 		authGroup.GET("/register", views.RegisterGET)
 		authGroup.POST("/register", views.Register)
+
+		authGroup.GET("/logout", views.Logout)
 	}
 
 	router.GET("/chat", func(c *gin.Context) {

@@ -18,8 +18,6 @@ func Index(c *gin.Context) {
 	})
 }
 
-// TODO Add logout
-
 //LoginGET view
 func LoginGET(c *gin.Context) {
 	renderTemplate(c, "login", nil)
@@ -53,7 +51,7 @@ func Login(c *gin.Context) {
 		true,
 		false,
 	)
-	c.Redirect(http.StatusTemporaryRedirect, "/")
+	c.Redirect(http.StatusFound, "/")
 }
 
 //RegisterGET view
@@ -79,5 +77,16 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "/")
+	c.Redirect(http.StatusFound, "/")
+}
+
+//Logout view
+func Logout(c *gin.Context) {
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     settings.TokenCookieName,
+		Path:     "/",
+		HttpOnly: true,
+		MaxAge:   -1,
+	})
+	return
 }
