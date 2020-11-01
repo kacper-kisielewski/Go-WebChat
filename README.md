@@ -22,4 +22,6 @@ Finally you may run the application in container
 
 Wait a bit then open a web browser and navigate to [http://**localhost**:8000](http://localhost:8000)
 
+> If cookies are not setting during the login process make sure you went to ``localhost`` not ``127.0.0.1``
+
 ## Work in progress
