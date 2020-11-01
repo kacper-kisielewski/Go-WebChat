@@ -38,6 +38,8 @@ func setupRouter() *gin.Engine {
 		captcha.ShowCaptchaImage(c.Writer, c.Request, c.Param("id"))
 	})
 
+	router.Static("/static", "static")
+
 	router.GET("/chat", func(c *gin.Context) {
 		ws.ChatHandler(c.Writer, c.Request)
 	})
