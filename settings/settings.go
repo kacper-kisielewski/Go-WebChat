@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+/*
+	NOTE!
+	You may also edit some templates like about.html
+*/
+
 //Define global constants (settings)
 const (
 	Port = 8000

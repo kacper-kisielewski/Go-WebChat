@@ -27,6 +27,7 @@ func setupRouter() *gin.Engine {
 	router.HTMLRender = setupRenderer()
 
 	router.GET("/", views.Index)
+	router.GET("/about", views.About)
 
 	authGroup := router.Group("/auth")
 	{

@@ -26,6 +26,11 @@ func Index(c *gin.Context) {
 	})
 }
 
+//About view
+func About(c *gin.Context) {
+	renderTemplate(c, "about", nil, "About")
+}
+
 //LoginGET view
 func LoginGET(c *gin.Context) {
 	renderTemplate(c, "login", nil, "Login")
