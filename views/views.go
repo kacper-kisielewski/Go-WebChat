@@ -87,7 +87,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusFound, "/")
+	c.Redirect(http.StatusFound, "/auth/login")
 }
 
 //Logout view
