@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gertd/go-pluralize"
 	"github.com/gorilla/websocket"
 	"github.com/kyokomi/emoji"
 	"github.com/microcosm-cc/bluemonday"
@@ -112,6 +113,11 @@ func brodcast(message, authorUsername string) {
 
 func addClient(client Client) {
 	clients = append(clients, client)
+	client.SendTo(fmt.Sprintf(
+		"Welcome to %s - %s online",
+		settings.SiteName,
+		pluralize.NewClient().Pluralize("user", len(clients), true),
+	), settings.ChatSystemUsername)
 	log.Printf(
 		"New connection: %s [%s] --> %s",
 		client.Conn.RemoteAddr().String(),
