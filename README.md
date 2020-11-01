@@ -1,6 +1,6 @@
 # Go-WebChat
 
-A simple webchat built with Go
+A real-time webchat built with Go
 
 ## Running in container
 
