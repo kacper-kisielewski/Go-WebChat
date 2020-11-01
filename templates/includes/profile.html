@@ -2,6 +2,14 @@
 {{ if .userExists }}
     <h1>{{ .username }}</h1>
     <h3 class="text-secondary">Member Since: {{ .createdAt }}</h3>
+    <p>
+        {{ .description }}
+    </p>
+    {{ if .isOwner }}
+        <a href="/settings/desc">
+            <button class="btn btn-sm btn-primary">Edit Description</button>
+        </a>
+    {{ end }}
 {{ else }}
     <h1>User doesn't exist</h1>
 {{ end }}

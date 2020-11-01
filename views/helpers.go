@@ -1,6 +1,7 @@
 package views
 
 import (
+	"Website/db"
 	"Website/jwt"
 	"Website/settings"
 	"net/http"
@@ -16,6 +17,12 @@ func AuthenticateContext(c *gin.Context) (string, string, error) {
 	}
 
 	return jwt.GetUsernameAndEmailFromToken(tokenCookie)
+}
+
+//GetUserFromContext returns user model from context
+func GetUserFromContext(c *gin.Context) db.User {
+	_, email, _ := AuthenticateContext(c)
+	return db.GetUserByEmail(email)
 }
 
 func renderTemplate(c *gin.Context, name string, obj map[string]interface{}, title ...string) {

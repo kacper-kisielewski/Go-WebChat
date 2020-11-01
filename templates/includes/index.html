@@ -4,8 +4,8 @@
     <hr>
 
     <div>
-        <input type="text" id="messageInp" class="w-25"> <br>
-        <p id="chat"/>
+        <input type="text" id="messageInp" placeholder="Type something..." class="w-25"> <br>
+        <p id="chat" class="mt-1"/>
     </div>
 
     <script>
@@ -39,7 +39,12 @@
         });
 
         function printMessage(message, author) {
-            chat.innerText = `[${author}] ${message}\n` + chat.innerText;
+            chat.innerHTML = `[${function(){
+                if (author === "{{ .chatSystemUsername }}") {
+                    return `<a class="text-warning">${author}<\/a>`;
+                }
+                return `<a href="/profile/${author}">${author}<\/a>`;
+            }()}] ${message}<br>` + chat.innerHTML;
         }
 
         function receiveMessage(message) {

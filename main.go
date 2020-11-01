@@ -41,6 +41,12 @@ func setupRouter() *gin.Engine {
 
 	router.GET("/profile/:username", views.Profile)
 
+	settingsGroup := router.Group("/settings")
+	{
+		settingsGroup.GET("/desc", views.EditDescriptionGET)
+		settingsGroup.POST("/desc", views.EditDescription)
+	}
+
 	router.GET("/captcha/:id", func(c *gin.Context) {
 		captcha.ShowCaptchaImage(c.Writer, c.Request, c.Param("id"))
 	})

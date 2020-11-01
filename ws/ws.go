@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/kyokomi/emoji"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 var (
@@ -18,7 +19,8 @@ var (
 		ReadBufferSize:  settings.ReadBufferSize,
 		WriteBufferSize: settings.WriteBufferSize,
 	}
-	clients []Client
+	clients   []Client
+	sanitizer = bluemonday.StrictPolicy()
 )
 
 //Client struct
@@ -31,7 +33,7 @@ type Client struct {
 //SendTo sends a message to a client
 func (c *Client) SendTo(message, authorUsername string) error {
 	return c.Conn.WriteJSON(Message{
-		Message:        emoji.Sprint(message),
+		Message:        emoji.Sprint(sanitizer.Sanitize(message)),
 		AuthorUsername: authorUsername,
 	})
 }

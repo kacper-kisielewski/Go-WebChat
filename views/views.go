@@ -4,8 +4,10 @@ import (
 	"Website/db"
 	"Website/jwt"
 	"Website/settings"
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"Website/captcha"
 
@@ -118,13 +120,44 @@ func Profile(c *gin.Context) {
 	userExists := (user.Username != "")
 
 	renderTemplate(c, "profile", map[string]interface{}{
-		"username":   user.Username,
-		"createdAt":  createdAt,
-		"userExists": userExists,
+		"username":    user.Username,
+		"createdAt":   createdAt,
+		"description": user.Description,
+		"userExists":  userExists,
+		"isOwner": (func() bool {
+			if currentUsername, _, _ := AuthenticateContext(c); currentUsername == user.Username {
+				return true
+			}
+			return false
+		})(),
 	}, (func() string {
 		if userExists {
 			return username + "'s Profile"
 		}
 		return "User not found"
 	})())
+}
+
+//EditDescriptionGET view
+func EditDescriptionGET(c *gin.Context) {
+	user := GetUserFromContext(c)
+	renderTemplate(c, "edit_desc", map[string]interface{}{
+		"description": user.Description,
+	}, "Edit Description")
+}
+
+//EditDescription view
+func EditDescription(c *gin.Context) {
+	user := GetUserFromContext(c)
+	description := c.PostForm("description")
+
+	if len(description) > settings.MaximumDescriptionLength {
+		c.String(http.StatusUnprocessableEntity, fmt.Sprintf(
+			"Description cannot exceed %d characters", settings.MaximumDescriptionLength,
+		))
+		return
+	}
+
+	db.DB.Model(&user).Update("description", strings.TrimSpace(description))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/profile/%s", user.Username))
 }

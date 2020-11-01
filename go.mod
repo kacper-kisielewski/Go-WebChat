@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/kyokomi/emoji v1.5.1
 	github.com/lestrrat-go/strftime v1.0.3
+	github.com/microcosm-cc/bluemonday v1.0.4
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
 	gorm.io/driver/postgres v1.0.5

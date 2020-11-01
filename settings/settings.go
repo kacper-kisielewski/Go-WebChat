@@ -31,6 +31,8 @@ const (
 	ChatMessageCooldown      = time.Second * 3
 	ChatSystemUsername       = "@SYSTEM"
 
+	MaximumDescriptionLength = 200
+
 	LoginInvalidCredientialsMessage = "Invalid credientials"
 
 	ReadBufferSize  = 256
