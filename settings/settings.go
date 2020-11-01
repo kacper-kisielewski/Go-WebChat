@@ -40,6 +40,7 @@ const (
 	ChatMessageCooldown      = time.Second * 3
 	ChatSystemUsername       = "@SYSTEM"
 
+	AvatarJPGQuality        = 40
 	AvatarResizeWidth  uint = 500
 	AvatarResizeHeight uint = 500
 

@@ -122,7 +122,7 @@ func resizeAndSave(fileHeader *multipart.FileHeader, dst string) error {
 	case ".jpg":
 		err = jpeg.Encode(out, resized,
 			&jpeg.Options{
-				Quality: 10,
+				Quality: settings.AvatarJPGQuality,
 			})
 	case ".png":
 		err = png.Encode(out, resized)
