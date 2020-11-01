@@ -23,5 +23,3 @@ Finally you may run the application in container
 Wait a bit then open a web browser and navigate to [http://**localhost**:8000](http://localhost:8000)
 
 ## Work in progress
-
-<!-- TODO Mention .env file. Must open "localhost" -->

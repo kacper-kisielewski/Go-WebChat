@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Website/captcha"
 	"Website/settings"
 	"Website/views"
 	"Website/ws"
@@ -32,6 +33,10 @@ func setupRouter() *gin.Engine {
 
 		authGroup.GET("/logout", views.Logout)
 	}
+
+	router.GET("/captcha/:id", func(c *gin.Context) {
+		captcha.ShowCaptchaImage(c.Writer, c.Request, c.Param("id"))
+	})
 
 	router.GET("/chat", func(c *gin.Context) {
 		ws.ChatHandler(c.Writer, c.Request)

@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"Website/captcha"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
@@ -57,12 +59,19 @@ func Login(c *gin.Context) {
 
 //RegisterGET view
 func RegisterGET(c *gin.Context) {
-	renderTemplate(c, "register", nil)
+	renderTemplate(c, "register", map[string]interface{}{
+		"captchaID": captcha.NewCaptcha(),
+	})
 }
 
 //Register view
 func Register(c *gin.Context) {
 	var registerBody RegisterBody
+
+	if !captcha.VerifyCaptcha(c.PostForm("captcha_id"), c.PostForm("captcha_solution")) {
+		c.String(http.StatusForbidden, "Invalid captcha")
+		return
+	}
 
 	if err := c.ShouldBindWith(&registerBody, binding.Form); err != nil {
 		c.String(http.StatusUnprocessableEntity, err.Error())

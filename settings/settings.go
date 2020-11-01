@@ -17,8 +17,8 @@ const (
 	TokenCookieName   = "token"
 	Domain            = "localhost"
 
-	MaximumUsernameLength         = 30
 	MinimumUsernameLength         = 2
+	MaximumUsernameLength         = 30
 	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"
 
 	MaximumChatMessageLength = 100

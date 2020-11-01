@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/bxcodec/faker/v3 v3.5.0
+	github.com/dchest/captcha v0.0.0-20200903113550-03f5f0333e1f
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/multitemplate v0.0.0-20200916052041-666a7309d230
 	github.com/gin-gonic/gin v1.6.3
