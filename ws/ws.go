@@ -68,6 +68,10 @@ func ChatHandler(w http.ResponseWriter, req *http.Request) {
 
 	for {
 		_, message, err := client.Conn.ReadMessage()
+		if err != nil {
+			return
+		}
+
 		if time.Now().Sub(client.LastMessageAt) <= settings.ChatMessageCooldown {
 			client.SendTo(
 				fmt.Sprintf("Please wait %s before sending a message", settings.ChatMessageCooldown.String()),
@@ -75,9 +79,6 @@ func ChatHandler(w http.ResponseWriter, req *http.Request) {
 			continue
 		}
 		client.LastMessageAt = time.Now()
-		if err != nil {
-			return
-		}
 		if !checkMessage(string(message)) {
 			continue
 		}
