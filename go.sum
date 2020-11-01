@@ -1,6 +1,8 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/aymerick/douceur v0.2.0 h1:Mv+mAeH1Q+n9Fr+oyamOlAkUNPWPlA8PPGR0QAaYuPk=
 github.com/aymerick/douceur v0.2.0/go.mod h1:wlT5vV2O3h55X9m7iVYN0TBM0NH/MmbLnd30/FjWUq4=
+github.com/badoux/checkmail v1.2.1 h1:TzwYx5pnsV6anJweMx2auXdekBwGr/yt1GgalIx9nBQ=
+github.com/badoux/checkmail v1.2.1/go.mod h1:XroCOBU5zzZJcLvgwU15I+2xXyCdTWXyR9MGfRhBYy0=
 github.com/bxcodec/faker v1.5.0 h1:RIWOeAcM3ZHye1i8bQtHU2LfNOaLmHuRiCo60mNMOcQ=
 github.com/bxcodec/faker v2.0.1+incompatible h1:P0KUpUw5w6WJXwrPfv35oc91i4d8nf40Nwln+M/+faA=
 github.com/bxcodec/faker v2.0.1+incompatible/go.mod h1:BNzfpVdTwnFJ6GtfYTcQu6l6rHShT+veBxNCnjCx5XM=

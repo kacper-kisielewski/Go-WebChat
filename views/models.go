@@ -9,6 +9,6 @@ type RegisterBody struct {
 
 //LoginBody struct
 type LoginBody struct {
-	Email    string `form:"email" binding:"required,email"`
+	Email    string `form:"email" binding:"required"`
 	Password string `form:"password" binding:"required"`
 }

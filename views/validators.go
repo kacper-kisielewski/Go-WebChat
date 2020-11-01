@@ -4,6 +4,7 @@ import (
 	"Website/settings"
 	"strings"
 
+	"github.com/badoux/checkmail"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )
@@ -49,7 +50,7 @@ var EmailValidator validator.Func = func(fl validator.FieldLevel) bool {
 		return false
 	}
 
-	if strings.Count(email, "@") != 1 {
+	if checkmail.ValidateFormat(email) != nil {
 		return false
 	}
 
