@@ -2,14 +2,16 @@
 <h1>Edit Description</h1>
 <hr>
 
-<label for="description">Description:</label>
-<textarea class="form-control" 
-name="description" 
-id="description"
-form="desc_form"
-rows="5">{{ .description }}</textarea>
+<div class="container">
+    <label for="description">Description:</label>
+    <textarea class="form-control" 
+    name="description" 
+    id="description"
+    form="desc_form"
+    rows="5">{{ .description }}</textarea>
 
-<form method="POST" id="desc_form">
-    <button type="submit" class="btn btn-primary mt-2">Edit</button>
-</form>
+    <form method="POST" id="desc_form">
+        <button type="submit" class="btn btn-primary mt-2">Edit</button>
+    </form>
+</div>
 {{ end }}
