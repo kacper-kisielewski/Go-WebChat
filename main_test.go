@@ -4,9 +4,7 @@ import (
 	"Website/db"
 	"Website/jwt"
 	"Website/settings"
-	"Website/ws"
 	"io/ioutil"
-	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -15,7 +13,6 @@ import (
 
 	"github.com/bxcodec/faker/v3"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -103,24 +100,24 @@ func TestAccessToken(t *testing.T) {
 	assert.Equal(t, testUsername, user.Username)
 }
 
-func TestWebsocketChat(t *testing.T) {
-	url, _ := url.Parse("ws://127.0.0.1:8000/chat")
+// func TestWebsocketChat(t *testing.T) {
+// 	url, _ := url.Parse("ws://127.0.0.1:8000/chat")
 
-	conn, err := net.Dial("tcp", "127.0.0.1:8000")
-	assert.Nil(t, err)
+// 	conn, err := net.Dial("tcp", "127.0.0.1:8000")
+// 	assert.Nil(t, err)
 
-	wsConn, _, err := websocket.NewClient(conn, url, http.Header{
-		"Sec-Websocket-Protocol": {accessToken},
-	}, settings.ReadBufferSize, settings.WriteBufferSize)
-	assert.Nil(t, err)
+// 	wsConn, _, err := websocket.NewClient(conn, url, http.Header{
+// 		"Sec-Websocket-Protocol": {accessToken},
+// 	}, settings.ReadBufferSize, settings.WriteBufferSize)
+// 	assert.Nil(t, err)
 
-	var message ws.Message
-	wsConn.WriteMessage(1, testMessage)
+// 	var message ws.Message
+// 	wsConn.WriteMessage(1, testMessage)
 
-	assert.Nil(t, wsConn.ReadJSON(&message))
-	assert.Equal(t, string(testMessage), message.Message)
-	assert.Equal(t, testUsername, message.AuthorUsername)
-}
+// 	assert.Nil(t, wsConn.ReadJSON(&message))
+// 	assert.Equal(t, string(testMessage), message.Message)
+// 	assert.Equal(t, testUsername, message.AuthorUsername)
+// }
 
 func sendRegisterRequest(router *gin.Engine, username, email, password string) *httptest.ResponseRecorder {
 	return performRequest(

@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/lestrrat-go/strftime"
 )
 
 //Index view
@@ -25,7 +26,7 @@ func Index(c *gin.Context) {
 
 //LoginGET view
 func LoginGET(c *gin.Context) {
-	renderTemplate(c, "login", nil)
+	renderTemplate(c, "login", nil, "Login")
 }
 
 //Login view
@@ -37,12 +38,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if !db.AuthenticateUser(loginBody.Email, []byte(loginBody.Password)) {
+	user := db.GetUserByEmail(loginBody.Email)
+	if !db.AuthenticateUser(user.HashedPassword, []byte(loginBody.Password)) {
 		c.String(http.StatusForbidden, settings.LoginInvalidCredientialsMessage)
 		return
 	}
 
-	token, err := jwt.CreateToken(loginBody.Email)
+	token, err := jwt.CreateToken(user.Username, user.Email)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -63,7 +65,7 @@ func Login(c *gin.Context) {
 func RegisterGET(c *gin.Context) {
 	renderTemplate(c, "register", map[string]interface{}{
 		"captchaID": captcha.NewCaptcha(),
-	})
+	}, "Register")
 }
 
 //Register view
@@ -106,4 +108,23 @@ func Logout(c *gin.Context) {
 	})
 
 	c.Redirect(http.StatusMovedPermanently, "/")
+}
+
+//Profile view
+func Profile(c *gin.Context) {
+	username := c.Param("username")
+	user := db.GetUserByUsername(username)
+	createdAt, _ := strftime.Format("%x", user.CreatedAt)
+	userExists := (user.Username != "")
+
+	renderTemplate(c, "profile", map[string]interface{}{
+		"username":   user.Username,
+		"createdAt":  createdAt,
+		"userExists": userExists,
+	}, (func() string {
+		if userExists {
+			return username + "'s Profile"
+		}
+		return "User not found"
+	})())
 }

@@ -18,6 +18,9 @@
             <ul class="navbar-nav ml-auto">
                 {{ if .isAuthenticated }}
                     <li class="nav-item">
+                        <a class="nav-link" href="/profile/{{ .currentUsername }}">My Profile</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="/auth/logout">Logout</a>
                     </li>
                 {{ else }}

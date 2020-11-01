@@ -39,6 +39,8 @@ func setupRouter() *gin.Engine {
 		authGroup.GET("/logout", views.Logout)
 	}
 
+	router.GET("/profile/:username", views.Profile)
+
 	router.GET("/captcha/:id", func(c *gin.Context) {
 		captcha.ShowCaptchaImage(c.Writer, c.Request, c.Param("id"))
 	})

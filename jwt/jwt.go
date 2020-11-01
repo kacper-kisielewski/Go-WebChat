@@ -11,13 +11,15 @@ import (
 
 //UserClaims struct
 type UserClaims struct {
-	Email string `json:"email"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 	jwt.StandardClaims
 }
 
 //CreateToken returns jwt tokens
-func CreateToken(email string) (string, error) {
+func CreateToken(username, email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
+		username,
 		email,
 		jwt.StandardClaims{
 			ExpiresAt: settings.JwtTokenExpiresAt,
@@ -27,8 +29,8 @@ func CreateToken(email string) (string, error) {
 	return token.SignedString(settings.JwtSecret)
 }
 
-//GetEmailFromToken extracts email from JWT token
-func GetEmailFromToken(tokenString string) (string, error) {
+//GetUsernameAndEmailFromToken extracts email from JWT token
+func GetUsernameAndEmailFromToken(tokenString string) (string, string, error) {
 	token, err := jwt.ParseWithClaims(
 		tokenString, new(UserClaims), func(token *jwt.Token) (interface{}, error) {
 			return settings.JwtSecret, nil
@@ -37,16 +39,16 @@ func GetEmailFromToken(tokenString string) (string, error) {
 
 	if claims, ok := token.Claims.(*UserClaims); ok {
 		if claims.ExpiresAt+claims.IssuedAt < getCurrentUnixTime() {
-			return "", errors.New("Expired token")
+			return "", "", errors.New("Expired token")
 		}
-		return claims.Email, nil
+		return claims.Username, claims.Email, nil
 	}
-	return "", err
+	return "", "", err
 }
 
 //GetUserFromToken returns user model from token
 func GetUserFromToken(tokenString string) (db.User, error) {
-	email, err := GetEmailFromToken(tokenString)
+	_, email, err := GetUsernameAndEmailFromToken(tokenString)
 
 	if err != nil {
 		return db.User{}, err

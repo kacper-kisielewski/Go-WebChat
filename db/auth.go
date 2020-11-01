@@ -8,20 +8,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-//GetUserByEmail returns user model from email
-func GetUserByEmail(email string) User {
-	var user User
-
-	DB.First(&user, `LOWER(email) = ?`, strings.ToLower(email)).Scan(&user)
-
-	return user
-}
-
 //AuthenticateUser checks whether credientials are correct
-func AuthenticateUser(email string, password []byte) bool {
-	user := GetUserByEmail(email)
-
-	if bcrypt.CompareHashAndPassword(user.HashedPassword, password) != nil {
+func AuthenticateUser(hashedPassword, password []byte) bool {
+	if bcrypt.CompareHashAndPassword(hashedPassword, password) != nil {
 		return false
 	}
 	return true
@@ -45,17 +34,4 @@ func RegisterUser(username, email string, password []byte) error {
 	DB.Create(user)
 
 	return nil
-}
-
-//UserExists checks whether user already exists in the database
-func UserExists(username, email string) bool {
-	var (
-		user      User
-		userCount int64
-	)
-
-	DB.Model(&user).Where(
-		`username ILIKE ? OR email ILIKE ?`, username, email,
-	).Count(&userCount)
-	return int(userCount) >= 1
 }

@@ -53,12 +53,12 @@ type Message struct {
 
 //ChatHandler handles server chat
 func ChatHandler(w http.ResponseWriter, req *http.Request) {
-	user, err := jwt.GetUserFromToken(req.Header.Get("Sec-Websocket-Protocol"))
+	username, _, err := jwt.GetUsernameAndEmailFromToken(req.Header.Get("Sec-Websocket-Protocol"))
 	if err != nil {
 		return
 	}
 
-	client, err := newClient(w, req, user.Username)
+	client, err := newClient(w, req, username)
 	if err != nil {
 		return
 	}
