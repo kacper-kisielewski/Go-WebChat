@@ -98,5 +98,7 @@ func Logout(c *gin.Context) {
 		HttpOnly: true,
 		MaxAge:   -1,
 	})
+
+	c.Redirect(http.StatusMovedPermanently, "/")
 	return
 }
