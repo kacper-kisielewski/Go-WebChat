@@ -16,12 +16,12 @@ Generate a random key with the following command
 
 You can also customize application's settings in [settings.go](https://github.com/Kacperek1337/Go-WebChat/blob/master/settings/settings.go)
 
-Finally you may run the application in container
+Finally you may run application in the container
 
 ``docker-compose up --build``
 
 Wait a bit then open a web browser and navigate to [http://**localhost**:8000](http://localhost:8000)
 
-> If cookies are not setting during the login process make sure you went to ``localhost`` not ``127.0.0.1``
+> If cookies are not being set during the login process make sure you went to ``localhost`` not ``127.0.0.1``
 
 ## Work in progress

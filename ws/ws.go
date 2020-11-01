@@ -87,7 +87,7 @@ func ChatHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func checkMessage(message string) bool {
-	if len(message) > settings.MaximumUsernameLength {
+	if len(message) > settings.MaximumChatMessageLength {
 		return false
 	}
 
@@ -100,6 +100,7 @@ func checkMessage(message string) bool {
 
 func brodcast(message, authorUsername string) {
 	for _, client := range clients {
+		log.Printf("[%s] %s", authorUsername, message)
 		if client.SendTo(message, authorUsername) != nil {
 			removeClient(client)
 		}
@@ -109,8 +110,9 @@ func brodcast(message, authorUsername string) {
 func addClient(client Client) {
 	clients = append(clients, client)
 	log.Printf(
-		"New connection: %s --> %s",
+		"New connection: %s [%s] --> %s",
 		client.Conn.RemoteAddr().String(),
+		client.Username,
 		client.Conn.LocalAddr().String(),
 	)
 }
@@ -119,7 +121,9 @@ func removeClient(client Client) {
 	for i, _client := range clients {
 		if _client == client {
 			clients = append(clients[:i], clients[i+1:]...)
-			log.Printf("Connection to %s closed", client.Conn.RemoteAddr().String())
+			log.Printf("Connection to %s [%s] closed",
+				client.Conn.RemoteAddr().String(),
+				client.Username)
 			client.Conn.Close()
 			return
 		}

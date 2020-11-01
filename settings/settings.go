@@ -7,7 +7,7 @@ import (
 
 //Define global constants (settings)
 const (
-	Addr = ":8000"
+	Port = 8000
 	Salt = 18
 
 	SiteName     = "WebChat"
@@ -17,18 +17,24 @@ const (
 	TokenCookieName   = "token"
 	Domain            = "localhost"
 
+	PostgresHost     = "127.0.0.1"
+	PostgresUser     = "postgres"
+	PostgresPassword = "password"
+	PostgresDatabase = "website"
+	PostgresPort     = 5432
+
 	MinimumUsernameLength         = 2
 	MaximumUsernameLength         = 30
 	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"
 
-	MaximumChatMessageLength = 100
+	MaximumChatMessageLength = 140
 	ChatMessageCooldown      = time.Second * 3
 	ChatSystemUsername       = "@SYSTEM"
 
 	LoginInvalidCredientialsMessage = "Invalid credientials"
 
-	ReadBufferSize  = 128
-	WriteBufferSize = 128
+	ReadBufferSize  = 256
+	WriteBufferSize = 256
 )
 
 //Define global variables

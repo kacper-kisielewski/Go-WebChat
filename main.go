@@ -5,6 +5,7 @@ import (
 	"Website/settings"
 	"Website/views"
 	"Website/ws"
+	"fmt"
 	"log"
 	"path/filepath"
 
@@ -12,9 +13,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	log.Println("Starting HTTP server on port", settings.Port)
+}
+
 func main() {
 	router := setupRouter()
-	log.Panic(router.Run(settings.Addr))
+	log.Panic(router.Run(fmt.Sprintf(":%d", settings.Port)))
 }
 
 func setupRouter() *gin.Engine {

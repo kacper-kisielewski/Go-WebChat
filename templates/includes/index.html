@@ -25,7 +25,7 @@
         }
 
         const token = getCookie("{{ .tokenCookieName }}")
-        let ws = new WebSocket("ws://localhost:8000/chat", token);
+        let ws = new WebSocket("ws://{{ .domain }}:{{ .port }}/chat", token);
 
         const messageInp = document.getElementById("messageInp");
         var chat = document.getElementById("chat")
@@ -41,7 +41,7 @@
         });
 
         function printMessage(message, author) {
-            chat.innerText += `[${author}] ${message}\n`;
+            chat.innerText = `[${author}] ${message}\n` + chat.innerText;
         }
 
         function receiveMessage(message) {
