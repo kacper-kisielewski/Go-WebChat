@@ -199,9 +199,12 @@ func EditAvatar(c *gin.Context) {
 		log.Panic(err)
 	}
 
-	if err = os.Remove(avatarDir(user.Avatar)); err != nil {
-		log.Println(err)
+	if user.Avatar != settings.DefaultAvatar {
+		if err = os.Remove(avatarDir(user.Avatar)); err != nil {
+			log.Println(err)
+		}
 	}
+
 	db.DB.Model(&user).Update("avatar", fileName)
 
 	c.Redirect(http.StatusFound, fmt.Sprintf("/profile/%s", user.Username))
