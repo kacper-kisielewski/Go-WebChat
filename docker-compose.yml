@@ -21,6 +21,7 @@ services:
     network_mode: "host"
     environment: 
       JWT_SECRET: ${JWT_SECRET}
+      GIN_MODE: release
     depends_on:
       db:
         condition: service_healthy
