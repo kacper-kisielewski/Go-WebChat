@@ -24,6 +24,7 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
+	router.MaxMultipartMemory = settings.MaxMultipartMemory
 	router.HTMLRender = setupRenderer()
 
 	router.GET("/", views.Index)
@@ -46,12 +47,16 @@ func setupRouter() *gin.Engine {
 	{
 		settingsGroup.GET("/desc", views.EditDescriptionGET)
 		settingsGroup.POST("/desc", views.EditDescription)
+
+		settingsGroup.GET("/avatar", views.EditAvatarGET)
+		settingsGroup.POST("/avatar", views.EditAvatar)
 	}
 
 	router.GET("/captcha/:id", func(c *gin.Context) {
 		captcha.ShowCaptchaImage(c.Writer, c.Request, c.Param("id"))
 	})
 
+	router.Static("/avatars", settings.AvatarUploadsDir)
 	router.Static("/static", "static")
 
 	router.GET("/chat", func(c *gin.Context) {

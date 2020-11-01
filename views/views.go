@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 
 	"Website/captcha"
@@ -127,6 +129,7 @@ func Profile(c *gin.Context) {
 	renderTemplate(c, "profile", map[string]interface{}{
 		"username":    user.Username,
 		"createdAt":   createdAt,
+		"avatar":      user.Avatar,
 		"description": user.Description,
 		"userExists":  userExists,
 		"isOwner": (func() bool {
@@ -164,5 +167,42 @@ func EditDescription(c *gin.Context) {
 	}
 
 	db.DB.Model(&user).Update("description", strings.TrimSpace(description))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/profile/%s", user.Username))
+}
+
+//EditAvatarGET view
+func EditAvatarGET(c *gin.Context) {
+	renderTemplate(c, "edit_avatar", nil, "Edit Avatar")
+}
+
+//EditAvatar view
+func EditAvatar(c *gin.Context) {
+	var avatarDir = func(fileName string) string {
+		return path.Join(settings.AvatarUploadsDir, fileName)
+	}
+
+	user := GetUserFromContext(c)
+	avatar, err := c.FormFile("avatar")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	ext, ok := getContentTypeExt(avatar.Header.Get("Content-Type"))
+	if !ok {
+		c.String(http.StatusUnprocessableEntity, "Invalid content type")
+		return
+	}
+
+	fileName := generateAvatarFileName(ext)
+	err = resizeAndSave(avatar, avatarDir(fileName))
+	if err != nil {
+		log.Panic(err)
+	}
+
+	if err = os.Remove(avatarDir(user.Avatar)); err != nil {
+		log.Println(err)
+	}
+	db.DB.Model(&user).Update("avatar", fileName)
+
 	c.Redirect(http.StatusFound, fmt.Sprintf("/profile/%s", user.Username))
 }

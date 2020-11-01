@@ -1,0 +1,15 @@
+{{ define "content" }}
+<h1>Edit Avatar</h1>
+<hr>
+
+<div class="container w-25">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="avatar">Avatar</label>
+            <input type="file" class="form-control-file" id="avatar" name="avatar">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Edit</button>
+    </form>
+</div>
+{{ end }}
