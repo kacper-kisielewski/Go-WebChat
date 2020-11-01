@@ -94,6 +94,10 @@ func Register(c *gin.Context) {
 
 //Logout view
 func Logout(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
+
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     settings.TokenCookieName,
 		Path:     "/",
@@ -102,5 +106,4 @@ func Logout(c *gin.Context) {
 	})
 
 	c.Redirect(http.StatusMovedPermanently, "/")
-	return
 }
