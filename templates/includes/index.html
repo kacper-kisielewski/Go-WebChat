@@ -39,7 +39,10 @@
         });
 
         function printMessage(message, author) {
-            chat.innerHTML = `[${function(){
+            chat.innerHTML = `[<a class="text-info">${function(){
+                const date = new Date();
+                return date.toLocaleString("en-ES")
+            }()}<\/a>] [${function(){
                 if (author === "{{ .chatSystemUsername }}") {
                     return `<a class="text-warning">${author}<\/a>`;
                 }
