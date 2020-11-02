@@ -20,6 +20,11 @@ import (
 
 //Index view
 func Index(c *gin.Context) {
+	if IsAuthenticated(c) {
+		c.Redirect(http.StatusPermanentRedirect, "/channel/"+settings.MainChannel)
+		return
+	}
+
 	renderTemplate(c, "index", map[string]interface{}{
 		"mainChannel": settings.MainChannel,
 	})
@@ -187,7 +192,7 @@ func EditDescription(c *gin.Context) {
 	}
 
 	db.DB.Model(&user).Update("description", strings.TrimSpace(description))
-	c.Redirect(http.StatusFound, fmt.Sprintf("/profile/%s", user.Username))
+	c.Redirect(http.StatusFound, "/profile/"+user.Username)
 }
 
 //EditAvatarGET view
@@ -232,5 +237,5 @@ func EditAvatar(c *gin.Context) {
 
 	db.DB.Model(&user).Update("avatar", fileName)
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/profile/%s", user.Username))
+	c.Redirect(http.StatusFound, "/profile/"+user.Username)
 }

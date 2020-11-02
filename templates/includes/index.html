@@ -1,8 +1,4 @@
 {{ define "content" }}
-{{ if .isAuthenticated }}
-    <meta http-equiv="Refresh" content="0; url='/channel/{{ .mainChannel }}'"/>
-{{ else }}
     <h1>Welcome to {{ .siteName }}</h1>
     <h3>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Velit, ducimus?</h3>
-{{ end }}
 {{ end }}
