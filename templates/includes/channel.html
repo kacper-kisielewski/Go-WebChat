@@ -8,7 +8,6 @@
 </div>
 
 <script>
-    // TODO Add hyperlinks to hashtags
     function getCookie(name) {
         var cookieArr = document.cookie.split(";");
         
@@ -47,7 +46,13 @@
                 return `<a class="text-warning">${author}<\/a>`;
             }
             return `<a href="/profile/${author}">${author}<\/a>`;
-        }()}] ${message}<br>` + chat.innerHTML;
+        }()}] ${function(){
+            message.split(" ").forEach(function(val) {
+                if (val.startsWith("#"))
+                    message = message.replace(val, `<a href="/channel/${val.slice(1)}">${val}<\/a>`)
+            })
+            return message
+        }()}<br>` + chat.innerHTML;
     }
 
     function receiveMessage(message) {
