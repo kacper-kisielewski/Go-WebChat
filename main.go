@@ -43,6 +43,7 @@ func setupRouter() *gin.Engine {
 
 	router.GET("/profile/:username", views.Profile)
 
+	//TODO Deny access to some of these
 	settingsGroup := router.Group("/settings")
 	{
 		settingsGroup.GET("/desc", views.EditDescriptionGET)
@@ -56,11 +57,13 @@ func setupRouter() *gin.Engine {
 		captcha.ShowCaptchaImage(c.Writer, c.Request, c.Param("id"))
 	})
 
+	router.GET("/channel/:channel", views.Channel)
+
 	router.Static("/avatars", settings.AvatarUploadsDir)
 	router.Static("/static", "static")
 
-	router.GET("/chat", func(c *gin.Context) {
-		ws.ChatHandler(c.Writer, c.Request)
+	router.GET("/chat/:channel", func(c *gin.Context) {
+		ws.ChatHandler(c.Writer, c.Request, c.Param("channel"))
 	})
 
 	return router

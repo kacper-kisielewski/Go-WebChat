@@ -32,6 +32,8 @@ const (
 
 	MaxMultipartMemory = 1 << 20
 
+	MainChannel = "general"
+
 	MinimumUsernameLength         = 2
 	MaximumUsernameLength         = 30
 	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"

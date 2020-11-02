@@ -1,0 +1,69 @@
+{{ define "content" }}
+<h1>#{{ .channel }}</h1>
+<hr>
+
+<div>
+    <input type="text" id="messageInp" placeholder="Type something..." class="w-25"> <hr>
+    <p id="chat" class="mt-1"/>
+</div>
+
+<script>
+    // TODO Add hyperlinks to hashtags
+    function getCookie(name) {
+        var cookieArr = document.cookie.split(";");
+        
+        for(var i = 0; i < cookieArr.length; i++) {
+            var cookiePair = cookieArr[i].split("=");
+            if(name == cookiePair[0].trim()) {
+                return decodeURIComponent(cookiePair[1]);
+            }
+        }
+
+        return null;
+    }
+
+    const token = getCookie("{{ .tokenCookieName }}")
+    let ws = new WebSocket("ws://{{ .domain }}:{{ .port }}/chat/{{ .channel }}", token);
+
+    const messageInp = document.getElementById("messageInp");
+    var chat = document.getElementById("chat")
+    
+    function sendMessage() {
+        ws.send(messageInp.value);
+        messageInp.value = null;
+    }
+    
+    messageInp.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13)
+            sendMessage();
+    });
+
+    function printMessage(message, author) {
+        chat.innerHTML = `[<a class="text-info">${function(){
+            const date = new Date();
+            return date.toLocaleString("en-ES")
+        }()}<\/a>] [${function(){
+            if (author === "{{ .chatSystemUsername }}") {
+                return `<a class="text-warning">${author}<\/a>`;
+            }
+            return `<a href="/profile/${author}">${author}<\/a>`;
+        }()}] ${message}<br>` + chat.innerHTML;
+    }
+
+    function receiveMessage(message) {
+        decodedMessage = JSON.parse(message.data);
+
+        printMessage(decodedMessage.Message, decodedMessage.AuthorUsername);
+    }
+
+    function sendAsSystem(message) {
+        printMessage(message, "{{ .chatSystemUsername }}")
+    }
+
+    ws.onopen = function() { sendAsSystem("Successfully connected to the chat") }
+    ws.onerror = function() { sendAsSystem("An error occurred") }
+    ws.onclose = function() { sendAsSystem("Connection closed") }
+
+    ws.onmessage = receiveMessage;
+</script>
+{{ end }}

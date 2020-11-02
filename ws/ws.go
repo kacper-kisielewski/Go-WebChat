@@ -9,9 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gertd/go-pluralize"
 	"github.com/gorilla/websocket"
-	"github.com/kyokomi/emoji"
 	"github.com/microcosm-cc/bluemonday"
 )
 
@@ -24,30 +22,6 @@ var (
 	sanitizer = bluemonday.StrictPolicy()
 )
 
-//Client struct
-type Client struct {
-	Username      string
-	Conn          *websocket.Conn
-	LastMessageAt time.Time
-}
-
-//SendTo sends a message to a client
-func (c *Client) SendTo(message, authorUsername string) error {
-	return c.Conn.WriteJSON(Message{
-		Message:        emoji.Sprint(sanitizer.Sanitize(message)),
-		AuthorUsername: authorUsername,
-	})
-}
-
-func newClient(w http.ResponseWriter, req *http.Request, username string) (Client, error) {
-	conn, err := upgrader.Upgrade(w, req, nil)
-	if err != nil {
-		return Client{}, err
-	}
-
-	return Client{username, conn, time.Unix(0, 0)}, nil
-}
-
 //Message struct
 type Message struct {
 	Message        string
@@ -55,13 +29,13 @@ type Message struct {
 }
 
 //ChatHandler handles server chat
-func ChatHandler(w http.ResponseWriter, req *http.Request) {
+func ChatHandler(w http.ResponseWriter, req *http.Request, channel string) {
 	username, _, err := jwt.GetUsernameAndEmailFromToken(req.Header.Get("Sec-Websocket-Protocol"))
 	if err != nil {
 		return
 	}
 
-	client, err := newClient(w, req, username)
+	client, err := newClient(w, req, username, channel)
 	if err != nil {
 		return
 	}
@@ -86,7 +60,7 @@ func ChatHandler(w http.ResponseWriter, req *http.Request) {
 			continue
 		}
 
-		brodcast(string(message), client.Username)
+		brodcast(string(message), client)
 	}
 }
 
@@ -102,39 +76,14 @@ func checkMessage(message string) bool {
 	return true
 }
 
-func brodcast(message, authorUsername string) {
+func brodcast(message string, author Client) {
 	for _, client := range clients {
-		log.Printf("[%s] %s", authorUsername, message)
-		if client.SendTo(message, authorUsername) != nil {
-			removeClient(client)
+		if client.Channel != author.Channel {
+			continue
 		}
-	}
-}
-
-func addClient(client Client) {
-	clients = append(clients, client)
-	client.SendTo(fmt.Sprintf(
-		"Welcome to %s - %s online",
-		settings.SiteName,
-		pluralize.NewClient().Pluralize("user", len(clients), true),
-	), settings.ChatSystemUsername)
-	log.Printf(
-		"New connection: %s [%s] --> %s",
-		client.Conn.RemoteAddr().String(),
-		client.Username,
-		client.Conn.LocalAddr().String(),
-	)
-}
-
-func removeClient(client Client) {
-	for i, _client := range clients {
-		if _client == client {
-			clients = append(clients[:i], clients[i+1:]...)
-			log.Printf("Connection to %s [%s] closed",
-				client.Conn.RemoteAddr().String(),
-				client.Username)
-			client.Conn.Close()
-			return
+		log.Printf("[#%s] [%s] %s", author.Channel, author.Username, message)
+		if client.SendTo(message, author.Username) != nil {
+			removeClient(client)
 		}
 	}
 }

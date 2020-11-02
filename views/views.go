@@ -21,8 +21,21 @@ import (
 //Index view
 func Index(c *gin.Context) {
 	renderTemplate(c, "index", map[string]interface{}{
+		"mainChannel": settings.MainChannel,
+	})
+}
+
+//Channel view
+func Channel(c *gin.Context) {
+	if _, _, err := AuthenticateContext(c); err != nil {
+		c.Status(http.StatusForbidden)
+		return
+	}
+
+	renderTemplate(c, "channel", map[string]interface{}{
 		"tokenCookieName":    settings.TokenCookieName,
 		"chatSystemUsername": settings.ChatSystemUsername,
+		"channel":            c.Param("channel"),
 		"domain":             settings.Domain,
 		"port":               settings.Port,
 	})
