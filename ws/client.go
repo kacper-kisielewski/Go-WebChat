@@ -46,12 +46,7 @@ func newClient(w http.ResponseWriter, req *http.Request, username, channel strin
 
 func addClient(client Client) {
 	clients = append(clients, client)
-	client.SendTo(fmt.Sprintf(
-		"Welcome to #%s - %s here",
-		client.Channel,
-		pluralize.NewClient().Pluralize(
-			"user", len(getClientsInChannel(client.Channel)), true),
-	), settings.ChatSystemUsername)
+
 	log.Printf(
 		"New connection: %s [%s (#%s)] --> %s",
 		client.Conn.RemoteAddr().String(),
@@ -59,15 +54,24 @@ func addClient(client Client) {
 		client.Channel,
 		client.Conn.LocalAddr().String(),
 	)
+
+	client.SendTo(fmt.Sprintf(
+		"Welcome to #%s - %s here",
+		client.Channel,
+		pluralize.NewClient().Pluralize(
+			"user", len(getClientsInChannel(client.Channel))-1, true),
+	), settings.ChatSystemUsername)
 }
 
 func removeClient(client Client) {
 	for i, _client := range clients {
 		if _client == client {
 			clients = append(clients[:i], clients[i+1:]...)
+
 			log.Printf("Connection to %s [%s] closed",
 				client.Conn.RemoteAddr().String(),
 				client.Username)
+
 			client.Conn.Close()
 			return
 		}

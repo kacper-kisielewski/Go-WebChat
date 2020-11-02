@@ -37,13 +37,15 @@ func Channel(c *gin.Context) {
 		return
 	}
 
+	channel := c.Param("channel")
+
 	renderTemplate(c, "channel", map[string]interface{}{
 		"tokenCookieName":    settings.TokenCookieName,
 		"chatSystemUsername": settings.ChatSystemUsername,
-		"channel":            c.Param("channel"),
+		"channel":            channel,
 		"domain":             settings.Domain,
 		"port":               settings.Port,
-	})
+	}, "#"+channel)
 }
 
 //About view
