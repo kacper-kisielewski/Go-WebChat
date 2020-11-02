@@ -38,7 +38,7 @@ func Channel(c *gin.Context) {
 	}
 
 	var (
-		channel     = c.Param("channel")
+		channel     = strings.ToLower(c.Param("channel"))
 		isNameValid = IsValidChannelName(channel)
 	)
 

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
@@ -62,7 +63,7 @@ func setupRouter() *gin.Engine {
 	router.Static("/static", "static")
 
 	router.GET("/chat/:channel", func(c *gin.Context) {
-		ws.ChatHandler(c.Writer, c.Request, c.Param("channel"))
+		ws.ChatHandler(c.Writer, c.Request, strings.ToLower(c.Param("channel")))
 	})
 
 	return router
