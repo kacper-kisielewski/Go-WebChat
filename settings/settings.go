@@ -2,6 +2,7 @@ package settings
 
 import (
 	"os"
+	"regexp"
 	"time"
 )
 
@@ -61,6 +62,12 @@ const (
 
 //Define global variables
 var (
+	PinnedChannels = []string{
+		"OffTopic", "Coding",
+	}
+
+	ChannelNameRegex = regexp.MustCompile(`[^\w]`)
+
 	AvatarWhitelistedContentTypes = map[string]string{
 		".jpg": "image/jpeg",
 		".png": "image/png",

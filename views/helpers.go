@@ -66,6 +66,7 @@ func renderTemplate(c *gin.Context, name string, obj map[string]interface{}, tit
 	username, _, err := AuthenticateContext(c)
 	data["isAuthenticated"] = (err == nil)
 	data["currentUsername"] = username
+	data["pinnedChannels"] = settings.PinnedChannels
 
 	for key, value := range obj {
 		data[key] = value

@@ -2,7 +2,6 @@ package views
 
 import (
 	"Website/settings"
-	"regexp"
 	"strings"
 
 	"github.com/badoux/checkmail"
@@ -72,7 +71,7 @@ func IsValidChannelName(name string) bool {
 		return false
 	}
 
-	if regexp.MustCompile(`[^\w]`).FindString(name) != "" {
+	if settings.ChannelNameRegex.FindString(name) != "" {
 		return false
 	}
 
