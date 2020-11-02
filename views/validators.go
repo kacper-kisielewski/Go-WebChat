@@ -54,5 +54,9 @@ var EmailValidator validator.Func = func(fl validator.FieldLevel) bool {
 		return false
 	}
 
+	if len(email) < settings.MinimumEmailLength {
+		return false
+	}
+
 	return true
 }

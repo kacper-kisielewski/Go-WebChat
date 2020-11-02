@@ -31,8 +31,16 @@ func AuthenticateContext(c *gin.Context) (string, string, error) {
 
 //IsAuthenticated checks whether user is authenticated
 func IsAuthenticated(c *gin.Context) bool {
-	_, _, err := AuthenticateContext(c)
-	return (err == nil)
+	_, email, err := AuthenticateContext(c)
+	if err != nil {
+		return false
+	}
+
+	if email == "" {
+		return false
+	}
+
+	return true
 }
 
 //GetUserFromContext returns user model from context

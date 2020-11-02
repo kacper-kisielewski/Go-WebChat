@@ -38,6 +38,8 @@ const (
 	MaximumUsernameLength         = 30
 	UsernameWhitelistedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789_"
 
+	MinimumEmailLength = 4
+
 	MaximumChatMessageLength = 140
 	ChatMessageCooldown      = time.Second * 3
 	ChatSystemUsername       = "@SYSTEM"
