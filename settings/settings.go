@@ -40,6 +40,9 @@ const (
 
 	MinimumEmailLength = 4
 
+	MaximumChannelNameLength = 10
+	MinimumChannelNameLength = 3
+
 	MaximumChatMessageLength = 140
 	ChatMessageCooldown      = time.Second * 3
 	ChatSystemUsername       = "@SYSTEM"

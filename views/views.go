@@ -37,7 +37,10 @@ func Channel(c *gin.Context) {
 		return
 	}
 
-	channel := c.Param("channel")
+	var (
+		channel     = c.Param("channel")
+		isNameValid = IsValidChannelName(channel)
+	)
 
 	renderTemplate(c, "channel", map[string]interface{}{
 		"tokenCookieName":    settings.TokenCookieName,
@@ -45,7 +48,13 @@ func Channel(c *gin.Context) {
 		"channel":            channel,
 		"domain":             settings.Domain,
 		"port":               settings.Port,
-	}, "#"+channel)
+		"isNameValid":        isNameValid,
+	}, func() string {
+		if isNameValid {
+			return "#" + channel
+		}
+		return "Invalid channel"
+	}())
 }
 
 //About view

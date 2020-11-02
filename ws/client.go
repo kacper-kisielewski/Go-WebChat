@@ -2,6 +2,7 @@ package ws
 
 import (
 	"Website/settings"
+	"Website/views"
 	"errors"
 	"fmt"
 	"log"
@@ -30,6 +31,10 @@ func (c *Client) SendTo(message, authorUsername string) error {
 }
 
 func newClient(w http.ResponseWriter, req *http.Request, username, channel string) (Client, error) {
+	if !views.IsValidChannelName(channel) {
+		return Client{}, errors.New("Invalid channel")
+	}
+
 	for _, client := range getClientsInChannel(channel) {
 		if client.Username == username {
 			return Client{}, errors.New("User already in this channel")

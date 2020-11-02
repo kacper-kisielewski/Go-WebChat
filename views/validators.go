@@ -2,6 +2,7 @@ package views
 
 import (
 	"Website/settings"
+	"regexp"
 	"strings"
 
 	"github.com/badoux/checkmail"
@@ -55,6 +56,23 @@ var EmailValidator validator.Func = func(fl validator.FieldLevel) bool {
 	}
 
 	if len(email) < settings.MinimumEmailLength {
+		return false
+	}
+
+	return true
+}
+
+//IsValidChannelName checks whether channel name is valid
+func IsValidChannelName(name string) bool {
+	if len(name) > settings.MaximumChannelNameLength {
+		return false
+	}
+
+	if len(name) < settings.MinimumChannelNameLength {
+		return false
+	}
+
+	if regexp.MustCompile(`[^\w]`).FindString(name) != "" {
 		return false
 	}
 
