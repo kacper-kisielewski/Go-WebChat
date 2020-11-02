@@ -43,7 +43,6 @@ func setupRouter() *gin.Engine {
 
 	router.GET("/profile/:username", views.Profile)
 
-	//TODO Deny access to some of these
 	settingsGroup := router.Group("/settings")
 	{
 		settingsGroup.GET("/desc", views.EditDescriptionGET)

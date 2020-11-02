@@ -27,7 +27,7 @@ func Index(c *gin.Context) {
 
 //Channel view
 func Channel(c *gin.Context) {
-	if _, _, err := AuthenticateContext(c); err != nil {
+	if !IsAuthenticated(c) {
 		c.Status(http.StatusForbidden)
 		return
 	}
@@ -134,10 +134,12 @@ func Logout(c *gin.Context) {
 
 //Profile view
 func Profile(c *gin.Context) {
-	username := c.Param("username")
-	user := db.GetUserByUsername(username)
-	createdAt, _ := strftime.Format("%x", user.CreatedAt)
-	userExists := (user.Username != "")
+	var (
+		username     = c.Param("username")
+		user         = db.GetUserByUsername(username)
+		createdAt, _ = strftime.Format("%x", user.CreatedAt)
+		userExists   = (user.Username != "")
+	)
 
 	renderTemplate(c, "profile", map[string]interface{}{
 		"username":    user.Username,
@@ -161,6 +163,11 @@ func Profile(c *gin.Context) {
 
 //EditDescriptionGET view
 func EditDescriptionGET(c *gin.Context) {
+	if !IsAuthenticated(c) {
+		c.Status(http.StatusForbidden)
+		return
+	}
+
 	user := GetUserFromContext(c)
 	renderTemplate(c, "edit_desc", map[string]interface{}{
 		"description": user.Description,
@@ -185,6 +192,11 @@ func EditDescription(c *gin.Context) {
 
 //EditAvatarGET view
 func EditAvatarGET(c *gin.Context) {
+	if !IsAuthenticated(c) {
+		c.Status(http.StatusForbidden)
+		return
+	}
+
 	renderTemplate(c, "edit_avatar", nil, "Edit Avatar")
 }
 

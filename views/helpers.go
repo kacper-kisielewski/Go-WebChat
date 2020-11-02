@@ -29,6 +29,12 @@ func AuthenticateContext(c *gin.Context) (string, string, error) {
 	return jwt.GetUsernameAndEmailFromToken(tokenCookie)
 }
 
+//IsAuthenticated checks whether user is authenticated
+func IsAuthenticated(c *gin.Context) bool {
+	_, _, err := AuthenticateContext(c)
+	return (err == nil)
+}
+
 //GetUserFromContext returns user model from context
 func GetUserFromContext(c *gin.Context) db.User {
 	_, email, _ := AuthenticateContext(c)
