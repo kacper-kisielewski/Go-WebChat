@@ -82,6 +82,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	if db.IsDisabled(user) {
+		c.String(http.StatusForbidden, settings.UserDisabledMessage)
+		return
+	}
+
 	token, err := jwt.CreateToken(user.Username, user.Email)
 	if err != nil {
 		log.Panic(err)
@@ -185,6 +190,11 @@ func EditDescriptionGET(c *gin.Context) {
 	}
 
 	user := GetUserFromContext(c)
+	if db.IsDisabled(user) {
+		c.Redirect(http.StatusFound, "/auth/logout")
+		return
+	}
+
 	renderTemplate(c, "edit_desc", map[string]interface{}{
 		"description": user.Description,
 	}, "Edit Description")
@@ -193,6 +203,11 @@ func EditDescriptionGET(c *gin.Context) {
 //EditDescription view
 func EditDescription(c *gin.Context) {
 	user := GetUserFromContext(c)
+	if db.IsDisabled(user) {
+		c.Redirect(http.StatusFound, "/auth/logout")
+		return
+	}
+
 	description := c.PostForm("description")
 
 	if len(description) > settings.MaximumDescriptionLength {
@@ -223,6 +238,11 @@ func EditAvatar(c *gin.Context) {
 	}
 
 	user := GetUserFromContext(c)
+	if db.IsDisabled(user) {
+		c.Redirect(http.StatusFound, "/auth/logout")
+		return
+	}
+
 	avatar, err := c.FormFile("avatar")
 	if err != nil {
 		log.Panic(err)

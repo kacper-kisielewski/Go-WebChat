@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"Website/db"
 	"Website/settings"
 	"Website/views"
 	"errors"
@@ -31,6 +32,10 @@ func (c *Client) SendTo(message, authorUsername string) error {
 }
 
 func newClient(w http.ResponseWriter, req *http.Request, username, channel string) (Client, error) {
+	if db.IsDisabled(db.GetUserByUsername(username)) {
+		return Client{}, errors.New("User disabled")
+	}
+
 	if !views.IsValidChannelName(channel) {
 		return Client{}, errors.New("Invalid channel")
 	}

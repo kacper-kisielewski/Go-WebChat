@@ -55,6 +55,7 @@ const (
 	MaximumDescriptionLength = 200
 
 	LoginInvalidCredientialsMessage = "Invalid credientials"
+	UserDisabledMessage             = "User disabled"
 
 	ReadBufferSize  = 256
 	WriteBufferSize = 256

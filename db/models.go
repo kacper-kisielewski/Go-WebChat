@@ -8,6 +8,7 @@ type User struct {
 	Username       string `gorm:"unique; not null"`
 	Email          string `gorm:"unique; not null"`
 	HashedPassword []byte `gorm:"not null"`
+	Disabled       bool   `gorm:"default:false"`
 
 	Avatar      string `gorm:"default:default.jpg"`
 	Description string `gorm:"default:Description not set"`

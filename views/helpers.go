@@ -31,12 +31,8 @@ func AuthenticateContext(c *gin.Context) (string, string, error) {
 
 //IsAuthenticated checks whether user is authenticated
 func IsAuthenticated(c *gin.Context) bool {
-	_, email, err := AuthenticateContext(c)
+	_, _, err := AuthenticateContext(c)
 	if err != nil {
-		return false
-	}
-
-	if email == "" {
 		return false
 	}
 
@@ -46,7 +42,14 @@ func IsAuthenticated(c *gin.Context) bool {
 //GetUserFromContext returns user model from context
 func GetUserFromContext(c *gin.Context) db.User {
 	_, email, _ := AuthenticateContext(c)
-	return db.GetUserByEmail(email)
+	user := db.GetUserByEmail(email)
+
+	if db.IsDisabled(user) {
+		c.Redirect(http.StatusFound, "/auth/logout")
+		return db.User{}
+	}
+
+	return user
 }
 
 func renderTemplate(c *gin.Context, name string, obj map[string]interface{}, title ...string) {

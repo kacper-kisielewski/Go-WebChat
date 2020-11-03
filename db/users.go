@@ -1,6 +1,8 @@
 package db
 
-import "strings"
+import (
+	"strings"
+)
 
 //GetUserByEmail returns user model from email
 func GetUserByEmail(email string) User {
@@ -18,6 +20,11 @@ func GetUserByUsername(username string) User {
 	DB.First(&user, `username ILIKE ?`, username).Scan(&user)
 
 	return user
+}
+
+//IsDisabled checks whether user is disabled
+func IsDisabled(user User) bool {
+	return user.Disabled
 }
 
 //UserExists checks whether user exists in the database
