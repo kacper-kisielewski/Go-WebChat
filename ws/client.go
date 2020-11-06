@@ -78,9 +78,11 @@ func removeClient(client *Client) {
 		if _client == client {
 			clients = append(clients[:i], clients[i+1:]...)
 
-			log.Printf("Connection to %s [%s] closed",
+			log.Printf("Connection to %s [%s (#%s)] closed",
 				client.Conn.RemoteAddr().String(),
-				client.Username)
+				client.Username,
+				client.Channel,
+			)
 
 			client.Conn.Close()
 			return
