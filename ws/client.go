@@ -54,7 +54,7 @@ func newClient(w http.ResponseWriter, req *http.Request, username, channel strin
 	return Client{username, channel, conn, time.Unix(0, 0)}, nil
 }
 
-func addClient(client Client) {
+func addClient(client *Client) {
 	clients = append(clients, client)
 
 	log.Printf(
@@ -73,7 +73,7 @@ func addClient(client Client) {
 	), settings.ChatSystemUsername)
 }
 
-func removeClient(client Client) {
+func removeClient(client *Client) {
 	for i, _client := range clients {
 		if _client == client {
 			clients = append(clients[:i], clients[i+1:]...)
@@ -88,8 +88,8 @@ func removeClient(client Client) {
 	}
 }
 
-func getClientsInChannel(channel string) []Client {
-	var clientList []Client
+func getClientsInChannel(channel string) []*Client {
+	var clientList []*Client
 
 	for _, client := range clients {
 		if client.Channel == channel {

@@ -18,7 +18,7 @@ var (
 		ReadBufferSize:  settings.ReadBufferSize,
 		WriteBufferSize: settings.WriteBufferSize,
 	}
-	clients   []Client
+	clients   []*Client
 	sanitizer = bluemonday.StrictPolicy()
 )
 
@@ -40,8 +40,8 @@ func ChatHandler(w http.ResponseWriter, req *http.Request, channel string) {
 		return
 	}
 
-	addClient(client)
-	defer removeClient(client)
+	addClient(&client)
+	defer removeClient(&client)
 
 	for {
 		_, message, err := client.Conn.ReadMessage()
