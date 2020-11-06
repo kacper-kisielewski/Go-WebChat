@@ -7,11 +7,15 @@ import (
 	"Website/ws"
 	"fmt"
 	"log"
+	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
+	limit "github.com/yangxikun/gin-limit-by-key"
+	"golang.org/x/time/rate"
 )
 
 func init() {
@@ -25,6 +29,20 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
+	router.Use(limit.NewRateLimiter(
+		func(c *gin.Context) string {
+			return c.ClientIP()
+		},
+		func(c *gin.Context) (*rate.Limiter, time.Duration) {
+			return rate.NewLimiter(
+				rate.Every(time.Millisecond*100), 10,
+			), time.Minute
+		},
+		func(c *gin.Context) {
+			c.AbortWithStatus(http.StatusTooManyRequests)
+		},
+	))
+
 	router.MaxMultipartMemory = settings.MaxMultipartMemory
 	router.HTMLRender = setupRenderer()
 
