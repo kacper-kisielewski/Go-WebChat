@@ -25,7 +25,7 @@ const (
 	TokenCookieName   = "token"
 	Domain            = "localhost"
 
-	PostgresHost     = "127.0.0.1"
+	PostgresHost     = "db"
 	PostgresUser     = "postgres"
 	PostgresPassword = "password"
 	PostgresDatabase = "website"

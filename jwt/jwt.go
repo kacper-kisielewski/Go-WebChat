@@ -9,14 +9,14 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-//UserClaims struct
+// UserClaims struct
 type UserClaims struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	jwt.StandardClaims
 }
 
-//CreateToken returns jwt tokens
+// CreateToken returns jwt tokens
 func CreateToken(username, email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaims{
 		username,
@@ -29,7 +29,7 @@ func CreateToken(username, email string) (string, error) {
 	return token.SignedString(settings.JwtSecret)
 }
 
-//GetUsernameAndEmailFromToken extracts email from JWT token
+// GetUsernameAndEmailFromToken extracts email from JWT token
 func GetUsernameAndEmailFromToken(tokenString string) (string, string, error) {
 	token, err := jwt.ParseWithClaims(
 		tokenString, new(UserClaims), func(token *jwt.Token) (interface{}, error) {
@@ -38,7 +38,7 @@ func GetUsernameAndEmailFromToken(tokenString string) (string, string, error) {
 	)
 
 	if claims, ok := token.Claims.(*UserClaims); ok {
-		if claims.ExpiresAt+claims.IssuedAt < getCurrentUnixTime() {
+		if getCurrentUnixTime() < claims.ExpiresAt {
 			return "", "", errors.New("Expired token")
 		}
 		return claims.Username, claims.Email, nil
@@ -46,7 +46,7 @@ func GetUsernameAndEmailFromToken(tokenString string) (string, string, error) {
 	return "", "", err
 }
 
-//GetUserFromToken returns user model from token
+// GetUserFromToken returns user model from token
 func GetUserFromToken(tokenString string) (db.User, error) {
 	_, email, err := GetUsernameAndEmailFromToken(tokenString)
 

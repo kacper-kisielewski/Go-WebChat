@@ -17,21 +17,25 @@ var (
 	upgrader = websocket.Upgrader{
 		ReadBufferSize:  settings.ReadBufferSize,
 		WriteBufferSize: settings.WriteBufferSize,
+		CheckOrigin: func(r *http.Request) bool {
+			return true // Allow all origins during development
+		},
 	}
 	clients   []*Client
 	sanitizer = bluemonday.StrictPolicy()
 )
 
-//Message struct
+// Message struct
 type Message struct {
 	Message        string
 	AuthorUsername string
 }
 
-//ChatHandler handles server chat
+// ChatHandler handles server chat
 func ChatHandler(w http.ResponseWriter, req *http.Request, channel string) {
 	username, _, err := jwt.GetUsernameAndEmailFromToken(req.Header.Get("Sec-Websocket-Protocol"))
 	if err != nil {
+		log.Printf("Error occurred: %v", err)
 		return
 	}
 
@@ -46,6 +50,7 @@ func ChatHandler(w http.ResponseWriter, req *http.Request, channel string) {
 	for {
 		_, message, err := client.Conn.ReadMessage()
 		if err != nil {
+			log.Printf("Error %v", err)
 			return
 		}
 

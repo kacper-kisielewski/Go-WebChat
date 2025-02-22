@@ -1,27 +1,39 @@
-version: '2.1'
+version: '3.8'
+
 services:
   db:
     image: postgres
+    restart: always
     ports:
       - "5432:5432"
     environment: 
       POSTGRES_DB: website
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app_network
+
   web:
     build: .
     ports:
       - "8000:8000"
     volumes:
       - ".:/app"
-    network_mode: "host"
     environment: 
       JWT_SECRET: ${JWT_SECRET}
       GIN_MODE: release
+      DATABASE_URL: "postgres://postgres:password@db:5432/website"
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
